@@ -1,0 +1,23 @@
+{
+  "name": "starter",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.2",
+    "gh-pages": "^6.3.0",
+    "tailwindcss": "^4.3.2",
+    "vite": "^8.1.1"
+  },
+  "dependencies": {
+    "@fontsource/manrope": "^5.2.8",
+    "leaflet": "^1.9.4"
+  }
+}
