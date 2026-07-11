@@ -38,8 +38,10 @@
           <div
             class="sort-container flex items-center justify-between w-full p-4 text-xl bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg"
           >
-            <p class="text-zinc-400 font-medium text-[1.2rem]">Sort by:</p>
+            <label for="sortBy" class="text-zinc-400 font-medium text-[1.2rem]">Sort by:</label>
             <select
+              id="sortBy"
+              name="sortBy"
               class="sort-by bg-dark--1/60 text-light--2 px-3 py-1.5 text-[1.2rem] rounded-xl border border-white/5 focus:outline-none focus:border-brand--2/30 cursor-pointer backdrop-blur-xs transition-colors duration-300"
             >
               <option value="date" class="bg-dark--2 text-light--2">Date (Default)</option>
@@ -102,13 +104,13 @@
                 />
               </li>
               <li class="form-row form-row-hidden transition-transform duration-300">
-                <label class="form-label" for="Elev Gain">Elev Gain</label>
+                <label class="form-label" for="elevGain">Elev Gain</label>
                 <input
                   class="form-input form-input-elevation"
                   placeholder="meters"
                   type="number"
-                  id="Elev Gain"
-                  name="Elev Gain"
+                  id="elevGain"
+                  name="elevGain"
                   disabled
                 />
               </li>
@@ -181,17 +183,17 @@
       <form id="editForm" class="flex flex-col gap-5">
         <div class="row-of-edit-popup">
           <label class="label-input" for="editDistance">Distance (km)</label>
-          <input type="number" id="editDistance" class="input" placeholder="km" />
+          <input type="number" id="editDistance" name="editDistance" class="input" placeholder="km" />
         </div>
         <div class="row-of-edit-popup">
           <label class="label-input" for="editDuration">Duration (min)</label>
-          <input type="number" id="editDuration" class="input" placeholder="min" />
+          <input type="number" id="editDuration" name="editDuration" class="input" placeholder="min" />
         </div>
         <div id="dynamicFieldContainer" class="row-of-edit-popup">
           <label id="dynamicLabel" class="label-input label-input-dynamic" for="editDynamicInput"
             >Cadence (step/min)</label
           >
-          <input type="number" id="editDynamicInput" class="input" placeholder="step/min" />
+          <input type="number" id="editDynamicInput" name="editDynamicInput" class="input" placeholder="step/min" />
         </div>
         <div class="flex gap-4 mt-4">
           <button
