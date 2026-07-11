@@ -152,7 +152,7 @@ class App {
   #currWorkoutObjectForEditBtn;
   #currWorkoutElForEditBtn;
   #workoutsArr = [];
-  #mapZoom = 13;
+  #mapZoom = 18;
   #currPolyline;
   constructor() {
     this.#getPosition();
@@ -185,18 +185,6 @@ class App {
       subdomains: 'abcd',
       accessToken: 'dBv3rRX6DwrICuH07D8NUIdU3Rk6IyuDwb604GmOv41WIWDKKCjULw3dukF2A5ck',
     }).addTo(this.#map);
-    L.marker(this.#initCoords)
-      .addTo(this.#map)
-      .bindPopup(
-        L.popup({
-          maxWidth: 300,
-          minWidth: 100,
-          autoClose: false,
-          closeOnClick: false,
-          className: `custom-map-popup`,
-        }).setContent('Your current location'),
-      )
-      .openPopup();
     this.#map.on('click', this.#showForm.bind(this));
     this.#renderDataLocalStorage();
     this.#showBtns();
@@ -216,8 +204,8 @@ class App {
       this.#workoutsArr.push(workoutInstance);
     });
   }
-  #showPopup(message, bg = 'bg-brand--2/50') {
-    elements.popupAction.classList.remove('bg-brand--2/50', 'bg-red-400/50');
+  #showPopup(message, bg = 'bg-brand--2') {
+    elements.popupAction.classList.remove('bg-brand--2', 'bg-red-400');
     elements.popupAction.classList.add(bg);
     const messageEl = elements.popupAction.querySelector('.text-popup');
     messageEl.textContent = message;
@@ -400,7 +388,7 @@ class App {
     e.preventDefault();
     const data = this.#getDataEditDialog();
     if (!this.#isVaildDataDialog(data)) {
-      this.#showPopup('🔴 Please fill out all fields with valid positive numbers!', 'bg-red-400/50');
+      this.#showPopup('🔴 Please fill out all fields with valid positive numbers!', 'bg-red-400');
       return;
     }
     this.#setNewDataInWorkout(data, this.#currWorkoutElForEditBtn, this.#currWorkoutObjectForEditBtn);
@@ -481,7 +469,7 @@ class App {
     e.preventDefault();
     const { typeOfWorkout, distance, duration, thirdInput } = this.#getDataFromForm();
     if (!this.#formVaildData(distance.value, duration.value, thirdInput.value)) {
-      this.#showPopup('🔴 Please fill out all fields with valid positive numbers!', 'bg-red-400/50');
+      this.#showPopup('🔴 Please fill out all fields with valid positive numbers!', 'bg-red-400');
       return;
     }
     const workoutClasses = {
@@ -506,7 +494,7 @@ class App {
   #reset() {
     const isAnyWorkout = JSON.parse(localStorage.getItem('workouts'));
     if (!isAnyWorkout || !isAnyWorkout.length) {
-      this.#showPopup("🔍 You don't have any registered workouts yet!", 'bg-red-400/50');
+      this.#showPopup("🔍 You don't have any registered workouts yet!", 'bg-red-400');
       return;
     }
     this.#showPopupConfirm('Are you sure you want to delete all workouts? 🗑️', execute => {
@@ -518,7 +506,7 @@ class App {
     const sortBy = elements.sortBy.value;
     const isAnyWorkout = localStorage.getItem('workouts');
     if (!isAnyWorkout || !isAnyWorkout.length) {
-      this.#showPopup("🔍 You don't have any registered workouts yet!", 'bg-red-400/50');
+      this.#showPopup("🔍 You don't have any registered workouts yet!", 'bg-red-400');
       return;
     }
     const isSorted = this.#workoutsArr.every((el, i, arr) => {
@@ -538,7 +526,7 @@ class App {
   #fitBoundsFun() {
     const isAnyWorkout = localStorage.getItem('workouts');
     if (!isAnyWorkout || !isAnyWorkout.length) {
-      this.#showPopup("🔍 You don't have any registered workouts yet!", 'bg-red-400/50');
+      this.#showPopup("🔍 You don't have any registered workouts yet!", 'bg-red-400');
       return;
     }
     const allpathCoords = this.#workoutsArr.map(workout => workout.pathCoords);
