@@ -179,8 +179,11 @@ class App {
     const { latitude, longitude } = pos.coords;
     this.#initCoords = [latitude, longitude];
     this.#map = L.map('map').setView(this.#initCoords, this.#mapZoom);
-    L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
-      attribution: '© Stadia Maps, © OpenStreetMap contributors',
+    L.tileLayer('https://{s}.tile.jawg.io/jawg-lagoon/{z}/{x}/{y}{r}.png?access-token={accessToken}', {
+      attribution:
+        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://www.jawg.io/">JawgMaps</a>',
+      subdomains: 'abcd',
+      accessToken: 'dBv3rRX6DwrICuH07D8NUIdU3Rk6IyuDwb604GmOv41WIWDKKCjULw3dukF2A5ck',
     }).addTo(this.#map);
     L.marker(this.#initCoords)
       .addTo(this.#map)
@@ -440,7 +443,7 @@ class App {
   }
   #LivePolyLineDraw() {
     const polylineOptions = {
-      color: '#fff',
+      color: '#000',
       weight: 5,
       opacity: 0.7,
       lineCap: 'round',
