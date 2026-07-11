@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="mapty" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" type="image/png" href="/Mapty/icon.webp" />
+    <title>mapty // Map your workouts</title>
+    <script type="module" crossorigin src="/Mapty/assets/index-DTL9vxQ-.js"></script>
+    <link rel="modulepreload" crossorigin href="/Mapty/assets/rolldown-runtime-Bh1tDfsg.js">
+    <link rel="modulepreload" crossorigin href="/Mapty/assets/vendor-Dj9klMfz.js">
+    <link rel="stylesheet" crossorigin href="/Mapty/assets/vendor-CwTH2V_m.css">
+    <link rel="stylesheet" crossorigin href="/Mapty/assets/index-BLxqszUf.css">
+  </head>
+  <body class="bg-dark--1 font-sans text-light--2 antialiased h-screen overflow-hidden selection:bg-brand--2/30">
+    <div class="overlay inset-0 fixed z-[1001] hidden-overlay"></div>
+    <h1 class="sr-only">Mapty</h1>
+    <main class="flex h-screen flex-col md:flex-row main">
+      <aside
+        class="sidebar bg-dark--2/70 backdrop-blur-md min-h-1/3 max-h-1/2 md:max-h-none md:min-h-none md:w-[46rem] flex flex-col justify-between gap-6 box-shadow-[10px_0_30px_rgba(0,0,0,0.3)] z-1 border-r border-white/5 p-6 md:p-10"
+      >
+        <div class="flex flex-col gap-8 overflow-y-auto scrollbar-none items-center">
+          <img src="logo.webp" alt="Logo" class="h-14 object-contain mx-auto transition-transform hover:scale-105" />
+          <div class="flex justify-between items-center w-full">
+            <button
+              class="btn-reset-all rounded-xl border border-red-500/10 bg-red-500/5 px-3 py-2 text-[1.2rem] font-medium text-red-400 backdrop-blur-xs shadow-md transition-all duration-300 hover:scale-105 hover:bg-red-500/20 hover:border-red-500/30 active:scale-95 cursor-pointer disabled-btn"
+              disabled
+            >
+              🗑️ Reset All
+            </button>
+            <button
+              class="go-to-my-position rounded-xl border border-white/5 bg-dark--1/60 p-3 text-light--2 backdrop-blur-md shadow-lg transition-all duration-300 hover:scale-105 hover:bg-dark--1/90 hover:border-brand--2/30 active:scale-95 group cursor-pointer hover:text-brand--2/30 disabled-btn"
+              disabled
+            >
+              GO to My Position
+            </button>
+          </div>
+          <div
+            class="sort-container flex items-center justify-between w-full p-4 text-xl bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 shadow-lg"
+          >
+            <p class="text-zinc-400 font-medium text-[1.2rem]">Sort by:</p>
+            <select
+              class="sort-by bg-dark--1/60 text-light--2 px-3 py-1.5 text-[1.2rem] rounded-xl border border-white/5 focus:outline-none focus:border-brand--2/30 cursor-pointer backdrop-blur-xs transition-colors duration-300"
+            >
+              <option value="date" class="bg-dark--2 text-light--2">Date (Default)</option>
+              <option value="distance" class="bg-dark--2 text-light--2">Distance</option>
+              <option value="duration" class="bg-dark--2 text-light--2">Duration</option>
+            </select>
+            <button
+              class="sort-btn flex items-center gap-2 bg-white/5 hover:bg-white/10 text-light--2 px-4 py-1.5 text-[1.2rem] rounded-xl border border-white/5 hover:border-white/10 shadow-md transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer disabled-btn"
+              disabled
+            >
+              <span>⬇️</span> Sort
+            </button>
+          </div>
+          <div class="flex items-baseline justify-between w-full">
+            <button
+              class="btn-fit-bounds flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 text-light--2 p-4 text-xl rounded-2xl border border-white/10 hover:border-brand--2/30 shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer w-full"
+            >
+              <span>🗺️</span> Show All Workouts on Map
+            </button>
+          </div>
+          <form
+            class="form-new bg-dark--1/80 border border-white/5 backdrop-blur-xs rounded-2xl p-5 transition-[height,opacity,translate,padding] duration-300 shadow-xl form-hidden"
+          >
+            <ul class="grid grid-cols-2 gap-5">
+              <li class="form-row">
+                <label class="form-label" for="options">Type</label>
+                <select class="form-input form-input-type" id="options" name="options">
+                  <option value="Running">Running</option>
+                  <option value="Cycling">Cycling</option>
+                </select>
+              </li>
+              <li class="form-row">
+                <label class="form-label" for="Distance">Distance</label>
+                <input
+                  class="form-input form-input-distance"
+                  type="number"
+                  placeholder="km"
+                  id="Distance"
+                  name="Distance"
+                />
+              </li>
+              <li class="form-row">
+                <label class="form-label" for="Duration">Duration</label>
+                <input
+                  class="form-input form-input-duration"
+                  type="number"
+                  placeholder="min"
+                  id="Duration"
+                  name="Duration"
+                />
+              </li>
+              <li class="form-row">
+                <label class="form-label" for="Cadence">Cadence</label>
+                <input
+                  class="form-input form-input-cadence"
+                  placeholder="step/min"
+                  type="number"
+                  id="Cadence"
+                  name="Cadence"
+                />
+              </li>
+              <li class="form-row form-row-hidden transition-transform duration-300">
+                <label class="form-label" for="Elev Gain">Elev Gain</label>
+                <input
+                  class="form-input form-input-elevation"
+                  placeholder="meters"
+                  type="number"
+                  id="Elev Gain"
+                  name="Elev Gain"
+                  disabled
+                />
+              </li>
+            </ul>
+            <button
+              class="submit-btn mt-6 w-full rounded-xl py-3 text-[1.4rem] font-semibold tracking-wide cursor-pointer shadow-md transition-[background-color,color,border,shadow] duration-500 hover:shadow-lg active:scale-[0.98] focus:outline-hidden submit-btn-theme-2"
+            >
+              OK
+            </button>
+          </form>
+          <ul class="workouts flex flex-col gap-6"></ul>
+        </div>
+        <footer class="text-center border-t border-white/5 p-5 mt-8">
+          <p class="text-[1.1rem] text-light--1 leading-relaxed font-light">
+            &copy; Copyright by
+            <a
+              class="text-light--1 transition-colors duration-300 hover:text-brand--2 underline underline-offset-1 hover:underline decoration-wavy"
+              target="_blank"
+              href="https://twitter.com/jonasschmedtman"
+              >Jonas Schmedtmann</a
+            >. Use for learning or your portfolio. Don't use to teach. Don't claim as your own.
+          </p>
+        </footer>
+      </aside>
+      <div
+        id="map"
+        class="flex-1 h-[45vh] md:h-full bg-dark--1 relative after:absolute after:inset-0 after:pointer-events-none after:shadow-[inset_10px_0_30px_rgba(0,0,0,0.15)]"
+      ></div>
+    </main>
+    <div
+      class="popup absolute right-6 top-6 z-[1002] flex max-w-md items-center gap-3 rounded-2xl p-8 text-[1.2rem] text-light--2 shadow-2xl transition-[translate,opacity] duration-600 font-bold hidden-popup"
+    >
+      <p class="text-popup text-xl">Workout added successfully!</p>
+      <button class="success-close-btn cursor-pointer transition-transform duration-600 hover:rotate-[360deg] ml-5">
+        ✕
+      </button>
+    </div>
+    <div
+      class="popup-confirm absolute left-1/2 -translate-x-1/2 top-15 z-[1002] flex flex-col gap-4 w-100 rounded-2xl border border-white/5 bg-dark--2/95 p-5 shadow-2xl backdrop-blur-md transition-translate duration-300 hidden-popup-confirm"
+    >
+      <p class="text-[1.2rem] font-medium text-light--1 text-popup">Are you sure you want to delete this workout? 🗑️</p>
+      <div class="flex gap-3 popup-ations">
+        <button
+          class="btn-confirm-no btn flex-1 cursor-pointer rounded-xl border border-white/5 bg-dark--1/60 py-2 text-[1.1rem] text-light--2 transition-colors hover:bg-dark--1/95 active:scale-95"
+        >
+          Cancel
+        </button>
+        <button
+          class="btn-confirm-yes btn flex-1 cursor-pointer rounded-xl bg-red-500/10 border border-red-500/20 py-2 text-[1.1rem] font-medium text-red-400 transition-colors hover:bg-red-500/20 active:scale-95"
+        >
+          Ok
+        </button>
+      </div>
+    </div>
+    <div
+      class="absolute left-1/2 top-1/2 -translate-1/2 dialog w-full max-w-md z-[1001] rounded-2xl animate-dialog border border-white/5 bg-dark--2/90 p-8 shadow-2xl backdrop-blur-md"
+      aria-modal="false"
+      role="dialog"
+    >
+      <button
+        id="closeModalBtn"
+        class="absolute top-5 right-5 text-light--2 hover:text-red-700 transition-colors duration-300 cursor-pointer text-xl"
+        title="Close modal"
+        aria-label="Close edit modal"
+        type="button"
+      >
+        ✕
+      </button>
+      <h2 class="text-3xl font-semibold text-light--1 mb-6 flex items-center gap-2">✏️ Edit Workout</h2>
+      <form id="editForm" class="flex flex-col gap-5">
+        <div class="row-of-edit-popup">
+          <label class="label-input" for="editDistance">Distance (km)</label>
+          <input type="number" id="editDistance" class="input" placeholder="km" />
+        </div>
+        <div class="row-of-edit-popup">
+          <label class="label-input" for="editDuration">Duration (min)</label>
+          <input type="number" id="editDuration" class="input" placeholder="min" />
+        </div>
+        <div id="dynamicFieldContainer" class="row-of-edit-popup">
+          <label id="dynamicLabel" class="label-input label-input-dynamic" for="editDynamicInput"
+            >Cadence (step/min)</label
+          >
+          <input type="number" id="editDynamicInput" class="input" placeholder="step/min" />
+        </div>
+        <div class="flex gap-4 mt-4">
+          <button
+            id="cancelModalBtn"
+            class="flex-1 rounded-xl border border-white/5 bg-dark--1/60 py-3 text-[1.2rem] font-medium text-light--2 transition-all duration-300 hover:bg-dark--1/90 active:scale-95 cursor-pointer"
+            type="button"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="flex-1 rounded-xl bg-brand--2/20 border border-brand--2/30 py-3 text-[1.2rem] font-semibold text-brand--2 shadow-md transition-all duration-300 hover:bg-brand--2/30 active:scale-95 cursor-pointer"
+          >
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>
