@@ -30,8 +30,11 @@
   .form-row {
     @apply flex items-center justify-between gap-3;
   }
-  .disabled-btn {
-    @apply disabled:opacity-50 disabled:pointer-events-none disabled:blur-[0.5rem];
+  .hidden-btns {
+    @apply blur-[1rem] pointer-events-none;
+  }
+  .hidden-btn {
+    @apply disabled:blur-[1rem] disabled:pointer-events-none;
   }
   .form-row-hidden {
     @apply pointer-events-none opacity-0 transition-transform absolute duration-300;

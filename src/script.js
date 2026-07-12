@@ -8,6 +8,8 @@ const elements = {
   containerPopupAction: document.querySelector('.popup-ations'),
   btnNo: document.querySelector('.btn-confirm-no'),
   btnYes: document.querySelector('.btn-confirm-yes'),
+  ContainerBtns: document.querySelector('.container-btns'),
+  finshDrawBtn: document.querySelector('.finsh-draw'),
   closeBtnDialog: document.getElementById('closeModalBtn'),
   cancelBtnDialog: document.getElementById('cancelModalBtn'),
   dynamicFieldContainer: document.getElementById('dynamicFieldContainer'),
@@ -171,6 +173,7 @@ class App {
     elements.btnClosePopup.addEventListener('click', this.#closePopupAction);
     elements.sortBtn.addEventListener('click', this.#sort.bind(this));
     elements.btnFitBounds.addEventListener('click', this.#fitBoundsFun.bind(this));
+    elements.finshDrawBtn.addEventListener('click', this.#showForm.bind(this));
   }
   #getPosition() {
     navigator.geolocation.getCurrentPosition(this.#loadMap.bind(this), () => alert('Could not get your position'));
@@ -185,9 +188,15 @@ class App {
       subdomains: 'abcd',
       accessToken: 'dBv3rRX6DwrICuH07D8NUIdU3Rk6IyuDwb604GmOv41WIWDKKCjULw3dukF2A5ck',
     }).addTo(this.#map);
-    this.#map.on('click', this.#showForm.bind(this));
+    this.#map.on('click', this.#LivePolyLineDraw.bind(this));
     this.#renderDataLocalStorage();
     this.#showBtns();
+  }
+  #setVeiwInLastWorkout() {
+    const bounds = L.latLngBounds(this.#workoutsArr.at(-1).pathCoords);
+    const center = bounds.getCenter();
+    const targetZoom = this.#map.getBoundsZoom(bounds, false, [30, 30]);
+    this.#map.setView(center, targetZoom);
   }
   #renderDataLocalStorage() {
     const workouts = JSON.parse(localStorage.getItem('workouts'));
@@ -203,6 +212,7 @@ class App {
       this.#drawPolyline(workoutInstance);
       this.#workoutsArr.push(workoutInstance);
     });
+    this.#setVeiwInLastWorkout();
   }
   #showPopup(message, bg = 'bg-brand--2') {
     elements.popupAction.classList.remove('bg-brand--2', 'bg-red-400');
@@ -237,15 +247,13 @@ class App {
     elements.overlay.classList.remove('blur-overlay');
   };
   #showBtns() {
-    elements.resetAllBtn.disabled = false;
-    elements.goToMyPosition.disabled = false;
-    elements.sortBtn.disabled = false;
+    elements.ContainerBtns.classList.remove('hidden-btns');
+  }
+  #showBtnFinshDraw() {
+    elements.finshDrawBtn.disabled = false;
   }
   #showForm(mapEvent) {
-    const { lat, lng } = mapEvent.latlng;
-    this.#pathCurrCoords.push([lat, lng]);
-    this.#LivePolyLineDraw();
-    if (!(this.#pathCurrCoords.length >= 2)) return;
+    this.#map.getContainer().style.pointerEvents = 'none';
     elements.formNew.classList.remove('form-hidden');
     elements.inputDistance.focus();
   }
@@ -285,6 +293,7 @@ class App {
     input1.value = input2.value = input3.value = '';
     elements.inputType.focus();
     form.classList.add('form-hidden');
+    this.#map.getContainer().style.pointerEvents = 'auto';
   }
   #toMyPosition() {
     this.#map.flyTo(this.#initCoords, this.#mapZoom, {
@@ -429,7 +438,10 @@ class App {
       return;
     }
   }
-  #LivePolyLineDraw() {
+  #LivePolyLineDraw(mapEvent) {
+    const { lat, lng } = mapEvent.latlng;
+    this.#pathCurrCoords.push([lat, lng]);
+    if (this.#pathCurrCoords.length >= 2) this.#showBtnFinshDraw();
     const polylineOptions = {
       color: '#000',
       weight: 5,
@@ -440,8 +452,10 @@ class App {
     };
     if (this.#currPolyline) this.#currPolyline.setLatLngs(this.#pathCurrCoords);
     else this.#currPolyline = L.polyline(this.#pathCurrCoords, polylineOptions).addTo(this.#map);
+    console.log(this.#currPolyline, this.#pathCurrCoords);
   }
   #drawPolyline(workoutObject) {
+    if (this.#currPolyline) this.#map.removeLayer(this.#currPolyline);
     const typeColor = {
       Running: '#00c46a',
       Cycling: '#ffb545',
@@ -485,7 +499,6 @@ class App {
     });
     this.#workoutsArr.push(workoutObject);
     workoutObject.renderWorkoutInList();
-    if (this.#currPolyline) this.#map.removeLayer(this.#currPolyline);
     this.#drawPolyline(workoutObject);
     this.#setItemInLoacalStorage(this.#workoutsArr);
     this.#hiddenForm(distance, duration, thirdInput, elements.formNew);
