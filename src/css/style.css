@@ -9,6 +9,7 @@
   --color-light--1: #8d969c;
   --color-light--2: #f1f3f5;
   --color-light--3: #e9ecef;
+  --breakpoint-xs: 320px;
 }
 
 @layer base {
@@ -28,7 +29,7 @@
     @apply h-0 opacity-0 pointer-events-none !p-0 -translate-y-30;
   }
   .form-row {
-    @apply flex items-center justify-between gap-3;
+    @apply flex items-center justify-between gap-7;
   }
   .hidden-btns {
     @apply blur-[1rem] pointer-events-none;
