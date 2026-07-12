@@ -9,6 +9,7 @@ const elements = {
   btnNo: document.querySelector('.btn-confirm-no'),
   btnYes: document.querySelector('.btn-confirm-yes'),
   ContainerBtns: document.querySelector('.container-btns'),
+  overlayMap: document.querySelector('.overlay-for-map'),
   finshDrawBtn: document.querySelector('.finsh-draw'),
   closeBtnDialog: document.getElementById('closeModalBtn'),
   cancelBtnDialog: document.getElementById('cancelModalBtn'),
@@ -252,7 +253,12 @@ class App {
   #showBtnFinshDraw() {
     elements.finshDrawBtn.disabled = false;
   }
+  #abilityClickOMap(ability = 'none') {
+    if (ability === 'none') elements.overlayMap.classList.remove('hidden-overlay');
+    else elements.overlay.classList.add('hidden-overlay');
+  }
   #showForm(mapEvent) {
+    this.#abilityClickOMap();
     this.#map.getContainer().style.pointerEvents = 'none';
     elements.formNew.classList.remove('form-hidden');
     elements.inputDistance.focus();
@@ -293,7 +299,7 @@ class App {
     input1.value = input2.value = input3.value = '';
     elements.inputType.focus();
     form.classList.add('form-hidden');
-    this.#map.getContainer().style.pointerEvents = 'auto';
+    this.#abilityClickOMap('auto');
   }
   #toMyPosition() {
     this.#map.flyTo(this.#initCoords, this.#mapZoom, {
@@ -452,7 +458,6 @@ class App {
     };
     if (this.#currPolyline) this.#currPolyline.setLatLngs(this.#pathCurrCoords);
     else this.#currPolyline = L.polyline(this.#pathCurrCoords, polylineOptions).addTo(this.#map);
-    console.log(this.#currPolyline, this.#pathCurrCoords);
   }
   #drawPolyline(workoutObject) {
     if (this.#currPolyline) this.#map.removeLayer(this.#currPolyline);
