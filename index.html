@@ -10,7 +10,6 @@
   </head>
   <body class="bg-dark--1 font-sans text-light--2 h-screen overflow-hidden selection:bg-brand--2/30">
     <div class="overlay inset-0 fixed z-[1001] hidden-overlay"></div>
-    <div class="overlay-for-map inset-0 fixed z-[1001] hidden-overlay"></div>
     <h1 class="sr-only">Mapty</h1>
     <main class="flex h-screen flex-col md:flex-row main">
       <aside
@@ -19,7 +18,7 @@
         <div class="flex flex-col gap-8 overflow-y-auto scrollbar-none items-center px-5">
           <img src="logo.webp" alt="Logo" class="h-14 object-contain mx-auto transition-transform hover:scale-105" />
           <div class="w-full flex flex-col gap-8 hidden-btns container-btns rounded-4xl">
-            <div class="flex justify-between items-center w-ful ">
+            <div class="flex justify-between items-center w-ful">
               <button
                 class="btn-reset-all rounded-xl border border-red-500/10 bg-red-500/5 px-3 py-2 text-[1.2rem] font-medium text-red-400 backdrop-blur-xs shadow-md transition-all duration-300 hover:scale-105 hover:bg-red-500/20 hover:border-red-500/30 active:scale-95 cursor-pointer"
               >
@@ -136,10 +135,10 @@
           </p>
         </footer>
       </aside>
-      <div
-        id="map"
-        class="flex-1 h-[45vh] md:h-full bg-dark--1 relative after:absolute after:inset-0 after:pointer-events-none after:shadow-[inset_10px_0_30px_rgba(0,0,0,0.15)]"
-      ></div>
+      <div class="relative flex-1 h-[45vh] md:h-full">
+        <div id="map" class="w-full h-full"></div>
+        <div class="overlay-map inset-0 hidden-overlay z-[1002] absolute"></div>
+      </div>
     </main>
     <div
       class="popup absolute right-6 top-6 z-[1002] flex max-w-md items-center gap-3 rounded-2xl p-8 text-[1.2rem] text-light--2 shadow-2xl transition-[translate,opacity] duration-600 font-bold hidden-popup"

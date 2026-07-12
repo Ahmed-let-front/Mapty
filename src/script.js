@@ -9,8 +9,8 @@ const elements = {
   btnNo: document.querySelector('.btn-confirm-no'),
   btnYes: document.querySelector('.btn-confirm-yes'),
   ContainerBtns: document.querySelector('.container-btns'),
-  overlayMap: document.querySelector('.overlay-for-map'),
   finshDrawBtn: document.querySelector('.finsh-draw'),
+  overlayMap: document.querySelector('.overlay-map'),
   closeBtnDialog: document.getElementById('closeModalBtn'),
   cancelBtnDialog: document.getElementById('cancelModalBtn'),
   dynamicFieldContainer: document.getElementById('dynamicFieldContainer'),
@@ -250,16 +250,15 @@ class App {
   #showBtns() {
     elements.ContainerBtns.classList.remove('hidden-btns');
   }
-  #showBtnFinshDraw() {
-    elements.finshDrawBtn.disabled = false;
+  #showBtnFinshDraw(ability = false) {
+    elements.finshDrawBtn.disabled = ability;
   }
   #abilityClickOMap(ability = 'none') {
     if (ability === 'none') elements.overlayMap.classList.remove('hidden-overlay');
-    else elements.overlay.classList.add('hidden-overlay');
+    else elements.overlayMap.classList.add('hidden-overlay');
   }
   #showForm(mapEvent) {
     this.#abilityClickOMap();
-    this.#map.getContainer().style.pointerEvents = 'none';
     elements.formNew.classList.remove('form-hidden');
     elements.inputDistance.focus();
   }
@@ -507,6 +506,7 @@ class App {
     this.#drawPolyline(workoutObject);
     this.#setItemInLoacalStorage(this.#workoutsArr);
     this.#hiddenForm(distance, duration, thirdInput, elements.formNew);
+    this.#showBtnFinshDraw(true)
     this.#showPopup('🟢 Workout added successfully!');
   }
   #reset() {
