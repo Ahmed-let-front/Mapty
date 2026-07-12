@@ -185,6 +185,14 @@ class App {
       subdomains: 'abcd',
       accessToken: 'dBv3rRX6DwrICuH07D8NUIdU3Rk6IyuDwb604GmOv41WIWDKKCjULw3dukF2A5ck',
     }).addTo(this.#map);
+    const customPopup = L.popup({
+      maxWidth: 300,
+      minWidth: 100,
+      autoClose: false,
+      closeOnClick: false,
+      className: `custom-map-popup`,
+    }).setContent("Your current location");
+    L.marker(this.#initCoords).addTo(this.#map).bindPopup(customPopup).openPopup()
     this.#map.on('click', this.#showForm.bind(this));
     this.#renderDataLocalStorage();
     this.#showBtns();
