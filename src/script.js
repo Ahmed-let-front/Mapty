@@ -32,33 +32,98 @@ const elements = {
 class Workout {
   date;
   id;
+  weatherContent;
+  contentWorkoutTitle;
+  weatherImo;
+  months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
   constructor(data) {
     this.pathCoords = data.pathCoords;
     this.distance = +data.distance;
     this.duration = +data.duration;
     this.id = data.id ? data.id : +(Date.now() + '').slice(-10);
     this.date = data.date ? new Date(data.date) : new Date();
+    this.contentWorkoutTitle = data.contentWorkoutTitle || null;
+    this.weatherContent = data.weatherContent || null;
+    console.log(data.weatherImo);
+    this.weatherImo = data.weatherImo || null;
   }
-  contentWorkout() {
-    const months = [
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-    const currMonth = months[this.date.getMonth()];
+  async #getGeoAndWeather() {
+    const weatherIcons = {
+      0: '☀️',
+      1: '🌤️',
+      2: '⛅',
+      3: '☁️',
+      45: '🌫️',
+      48: '🌫️',
+      51: '🌦️',
+      53: '🌦️',
+      55: '🌧️',
+      56: '🌧️',
+      57: '🌧️',
+      61: '💧',
+      63: '🌧️',
+      65: '🌧️',
+      66: '🥶',
+      67: '🥶',
+      71: '🌩️',
+      73: '❄️',
+      75: '❄️',
+      77: '❄️',
+      80: '🌦️',
+      81: '🌧️',
+      82: '⛈️',
+      85: '🌨️',
+      86: '🌨️',
+      95: '🌩️',
+      96: '⛈️',
+      99: '⛈️',
+    };
+    const [lat, lng] = this.pathCoords[0];
+    const [resGeo, resWeather] = await Promise.all([
+      fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`,
+      ),
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&current_weather=true`),
+    ]);
+    if (!resGeo.ok || !resWeather.ok) throw new Error('Problem getting location or weather data');
+    const [dataGeo, dataWeather] = await Promise.all([resGeo.json(), resWeather.json()]);
+    if (!dataGeo.countryName) {
+      throw new Error('❌ Cannot create a workout outside of land! Please select a valid location');
+    }
+    const weatherTemp = dataWeather.current_weather.temperature;
+    const weatherUnit = dataWeather.current_weather_units.temperature;
+    const weatherImo = weatherIcons[dataWeather.current_weather.weathercode] || '🌡️';
+    const currentTemp = `${weatherTemp}${weatherUnit}`;
+    const locality = dataGeo.locality || dataGeo.city || dataGeo.principalSubdivision;
+    return {
+      country: dataGeo.countryName,
+      locality,
+      currentTemp,
+      weatherImo,
+    };
+  }
+  async contentWorkout() {
+    if (this.contentWorkoutTitle && this.weatherContent && this.weatherImo) return;
+    const data = await this.#getGeoAndWeather();
+    const currMonth = this.months[this.date.getMonth()];
     const currDay = this.date.getDate();
-    const typeWorkout = this.type;
-    const iconType = typeWorkout === 'Running' ? '🏃‍♂️' : '🚴‍♀️';
-    return `${iconType} ${typeWorkout} on ${currMonth} ${currDay}`;
+    const iconType = this.type === 'Running' ? '🏃‍♂️' : '🚴‍♀️';
+    this.weatherContent = data.currentTemp;
+    this.contentWorkoutTitle = `${iconType} ${this.type} on ${currMonth} ${currDay} in ${data.country} : ${data.locality}`;
+    this.weatherImo = data.weatherImo;
   }
   renderWorkoutInList(position = 'afterbegin') {
     const workoutDetails = {
@@ -84,8 +149,8 @@ class Workout {
       },
     };
     const HTMLOfRow = `<li class="workout-card workout-${this.type}" data-id="${this.id}">
-              <div class="flex justify-between flex-wrap gap-6">
-                <h2 class="workout-title">${this.contentWorkout()}</h2>
+              <div class="flex justify-between flex-wrap gap-8">
+                <h2 class="workout-title">Get Data...</h2>
                 <div class="workout-actions flex items-center gap-2">
                    <button class="btn-edit-workout rounded-lg border border-white/5 bg-dark--1/60 p-2 text-[1.1rem] text-light--2 backdrop-blur-md shadow-md transition-all duration-300 hover:scale-105 hover:bg-dark--1/90 ${workoutDetails[this.type].hoverTextBtnEdit} active:scale-95 cursor-pointer ${workoutDetails[this.type].hoverBorderBtnEdit}"
                   >    
@@ -96,7 +161,12 @@ class Workout {
                   🗑️ Delete
                   </button>
                 </div>
-             </div>
+                <div class="workout-details">
+                    <div class="workout-detail workout-detail-weather text-xl">
+                      <span class="workout-icon">🌡️</span>
+                      <output class="workout-value text-xl">--</output>
+                    </div>
+                </div>
               <div class="workout-details">
                 <div class="workout-detail workout-detail-distance">
                   <span class="workout-icon">${workoutDetails[this.type].mainIcon}</span>
@@ -122,6 +192,16 @@ class Workout {
           </li>`;
     elements.containerWorkouts.insertAdjacentHTML(position, HTMLOfRow);
     return this;
+  }
+  async renderWorkoutContent() {
+    await this.contentWorkout();
+    const card = document.querySelector(`[data-id="${this.id}"]`);
+    const workoutTitleEl = card.querySelector('.workout-title');
+    const workoutWeatherContentEl = card.querySelector('.workout-value');
+    const workoutWeatherIconEL = card.querySelector('.workout-icon');
+    workoutWeatherIconEL.textContent = this.weatherImo;
+    workoutWeatherContentEl.textContent = this.weatherContent;
+    workoutTitleEl.textContent = this.contentWorkoutTitle;
   }
 }
 class Running extends Workout {
@@ -199,20 +279,21 @@ class App {
     const targetZoom = this.#map.getBoundsZoom(bounds, false, [30, 30]);
     this.#map.setView(center, targetZoom);
   }
-  #renderDataLocalStorage() {
+  async #renderDataLocalStorage() {
     const workouts = JSON.parse(localStorage.getItem('workouts'));
     if (!workouts || !workouts.length) return;
     const workoutClasses = {
       Running: Running,
       Cycling: Cycling,
     };
-    workouts.forEach(workout => {
+    for (const workout of workouts) {
       const workoutClass = workoutClasses[workout.type];
       const workoutInstance = new workoutClass(workout);
       workoutInstance.renderWorkoutInList();
+      await workoutInstance.renderWorkoutContent();
       this.#drawPolyline(workoutInstance);
       this.#workoutsArr.push(workoutInstance);
-    });
+    }
     this.#setVeiwInLastWorkout();
   }
   #showPopup(message, bg = 'bg-brand--2') {
@@ -221,7 +302,7 @@ class App {
     const messageEl = elements.popupAction.querySelector('.text-popup');
     messageEl.textContent = message;
     elements.popupAction.classList.remove('hidden-popup');
-    setTimeout(() => elements.popupAction.classList.add('hidden-popup'), 2000);
+    setTimeout(() => elements.popupAction.classList.add('hidden-popup'), 5000);
   }
   #closePopupAction() {
     elements.popupAction.classList.add('hidden-popup');
@@ -458,7 +539,7 @@ class App {
     if (this.#currPolyline) this.#currPolyline.setLatLngs(this.#pathCurrCoords);
     else this.#currPolyline = L.polyline(this.#pathCurrCoords, polylineOptions).addTo(this.#map);
   }
-  #drawPolyline(workoutObject) {
+  #drawPolyline(workoutObject, shouldAutoPan = false) {
     if (this.#currPolyline) this.#map.removeLayer(this.#currPolyline);
     const typeColor = {
       Running: '#00c46a',
@@ -469,8 +550,9 @@ class App {
       minWidth: 100,
       autoClose: false,
       closeOnClick: false,
+      autoPan: shouldAutoPan,
       className: `custom-map-popup ${workoutObject.type}-popup`,
-    }).setContent(workoutObject.contentWorkout());
+    }).setContent(workoutObject.contentWorkoutTitle);
     workoutObject.polyline = L.polyline(workoutObject.pathCoords, {
       color: typeColor[workoutObject.type],
       weight: 5,
@@ -483,31 +565,45 @@ class App {
     this.#pathCurrCoords = [];
     this.#currPolyline = null;
   }
-  #newWorkout(e) {
-    e.preventDefault();
-    const { typeOfWorkout, distance, duration, thirdInput } = this.#getDataFromForm();
-    if (!this.#formVaildData(distance.value, duration.value, thirdInput.value)) {
-      this.#showPopup('🔴 Please fill out all fields with valid positive numbers!', 'bg-red-400');
-      return;
+  async #newWorkout(e) {
+    try {
+      e.preventDefault();
+      const { typeOfWorkout, distance, duration, thirdInput } = this.#getDataFromForm();
+      if (!this.#formVaildData(distance.value, duration.value, thirdInput.value)) {
+        this.#showPopup('🔴 Please fill out all fields with valid positive numbers!', 'bg-red-400');
+        return;
+      }
+      const workoutClasses = {
+        Running,
+        Cycling,
+      };
+      const workoutClass = workoutClasses[typeOfWorkout];
+      const workoutObject = new workoutClass({
+        pathCoords: this.#pathCurrCoords,
+        distance: distance.value,
+        duration: duration.value,
+        [typeOfWorkout === 'Running' ? 'cadence' : 'elevationGain']: thirdInput.value,
+      });
+      workoutObject.renderWorkoutInList();
+      await workoutObject.renderWorkoutContent();
+      this.#drawPolyline(workoutObject, true);
+      this.#workoutsArr.push(workoutObject);
+      this.#setItemInLoacalStorage(this.#workoutsArr);
+      this.#hiddenForm(distance, duration, thirdInput, elements.formNew);
+      this.#showBtnFinshDraw(true);
+      this.#showPopup('🟢 Workout added successfully!');
+    } catch (err) {
+      this.#showPopup(err.message, 'bg-red-400');
+      const { typeOfWorkout, distance, duration, thirdInput } = this.#getDataFromForm();
+      document.querySelector('.workout-card').remove();
+      this.#hiddenForm(distance, duration, thirdInput, elements.formNew);
+      elements.finshDrawBtn.disabled = true;
+      elements.overlayMap.classList.add('hidden-overlay');
+      this.#pathCurrCoords = [];
+      this.#currPolyline.remove();
+      this.#currPolyline = null;
+      console.error(err);
     }
-    const workoutClasses = {
-      Running,
-      Cycling,
-    };
-    const workoutClass = workoutClasses[typeOfWorkout];
-    const workoutObject = new workoutClass({
-      pathCoords: this.#pathCurrCoords,
-      distance: distance.value,
-      duration: duration.value,
-      [typeOfWorkout === 'Running' ? 'cadence' : 'elevationGain']: thirdInput.value,
-    });
-    this.#workoutsArr.push(workoutObject);
-    workoutObject.renderWorkoutInList();
-    this.#drawPolyline(workoutObject);
-    this.#setItemInLoacalStorage(this.#workoutsArr);
-    this.#hiddenForm(distance, duration, thirdInput, elements.formNew);
-    this.#showBtnFinshDraw(true)
-    this.#showPopup('🟢 Workout added successfully!');
   }
   #reset() {
     const isAnyWorkout = JSON.parse(localStorage.getItem('workouts'));
@@ -529,7 +625,7 @@ class App {
     }
     const isSorted = this.#workoutsArr.every((el, i, arr) => {
       if (i === 0) return true;
-      return el[sortBy] <= arr[i - 1][sortBy];
+      return el[sortBy] >= arr[i - 1][sortBy];
     });
     if (isSorted) {
       this.#showPopup(`Workouts already sorted by: ${sortBy} 📊`);
@@ -537,8 +633,16 @@ class App {
     }
     elements.containerWorkouts.innerHTML = '';
     this.#workoutsArr.sort((a, b) => b[sortBy] - a[sortBy]);
-    this.#workoutsArr.forEach(el => el.renderWorkoutInList('beforeend'));
-    this.#setItemInLoacalStorage(this.#workoutsArr);
+    this.#workoutsArr.forEach(el => {
+      el.renderWorkoutInList('beforeend');
+      const card = elements.containerWorkouts.querySelector(`[data-id="${el.id}"]`);
+      if (card) {
+        card.querySelector('.workout-title').textContent = el.contentWorkoutTitle;
+        card.querySelector('.workout-detail-weather').querySelector('.workout-icon').textContent = el.weatherImo;
+        card.querySelector('.workout-detail-weather').querySelector('.workout-value').textContent = el.weatherContent;
+      }
+    });
+    this.#setItemInLoacalStorage(this.#workoutsArr.reverse());
     this.#showPopup(`Workouts sorted by ${sortBy} successfully! 📊`);
   }
   #fitBoundsFun() {
