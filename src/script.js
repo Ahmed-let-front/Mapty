@@ -57,7 +57,6 @@ class Workout {
     this.date = data.date ? new Date(data.date) : new Date();
     this.contentWorkoutTitle = data.contentWorkoutTitle || null;
     this.weatherContent = data.weatherContent || null;
-    console.log(data.weatherImo);
     this.weatherImo = data.weatherImo || null;
   }
   async #getGeoAndWeather() {
